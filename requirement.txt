@@ -1,0 +1,22 @@
+This file lists the Python libraries and their versions required to run the trading_bot.py script.
+Installing these will ensure all dependencies, including optional ones like 'ta', 'optuna', and 'alpaca-py', are met.
+Core data handling and numerical libraries
+pandas==2.2.2
+numpy==1.26.4
+yfinance==0.2.38
+
+Reinforcement Learning Framework and its dependencies
+gymnasium==0.29.1
+stable-baselines3==2.3.0
+torch==2.3.0
+
+Optional libraries for enhanced functionality
+For Technical Analysis (RSI)
+ta==0.11.0
+
+For Hyperparameter Optimization
+optuna==3.6.1
+
+For Live Trading (paper/live trading with Alpaca)
+alpaca-py==0.11.0
+websockets==12.0
