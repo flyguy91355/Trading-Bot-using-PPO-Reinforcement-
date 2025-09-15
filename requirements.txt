@@ -1,5 +1,5 @@
 # Trading Bot PPO - Python Dependencies
-# Install with: pip install -r requirement.txt
+# Install with: pip install -r requirements.txt
 
 # Core Dependencies - Required for basic functionality
 yfinance==0.2.43
