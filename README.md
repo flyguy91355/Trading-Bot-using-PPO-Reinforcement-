@@ -1,78 +1,175 @@
-Trading Bot using PPO Reinforcement Learning
-Project Description
-This project is an advanced algorithmic trading bot that utilizes a Proximal Policy Optimization (PPO) reinforcement learning agent to make trading decisions. The bot operates within a custom trading environment built with Gym, and it is capable of fetching historical data for stocks and cryptocurrencies. It includes an intuitive GUI for user interaction, allowing for easy data fetching, model training, and performance testing.
+Trading Bot with PPO Reinforcement Learning
+Overview
+This project implements a reinforcement learning-based trading bot using Proximal Policy Optimization (PPO) from Stable Baselines3. It fetches historical stock or cryptocurrency data via yfinance (no API key required), simulates trading in a custom Gymnasium environment, and provides a user-friendly Tkinter GUI for training, testing, and visualization.
+Key enhancements include:
 
-Key Features
-Data Fetching: Automatically downloads historical price data from Yahoo Finance for any stock or crypto symbol.
+Technical indicators like RSI (via the ta library).
+Risk management with configurable stop-loss thresholds and trade costs (e.g., commissions).
+Continued training from saved models.
+Hyperparameter tuning support via Optuna (optional).
+Stub for live paper trading using Alpaca (optional, requires API keys).
+Visualization with Matplotlib: Price charts with buy/sell signals and equity curves.
+Benchmarking against buy-and-hold strategies.
 
-Reinforcement Learning: Trains a PPO agent using Stable Baselines3 to learn an optimal trading strategy.
+The bot models trading as a Markov Decision Process:
 
-Custom Trading Environment: A Gym-compatible environment that simulates real-world trading, including an initial balance, share holdings, and portfolio value.
+State: Normalized closing prices over a lookback window + optional RSI + portfolio metrics (balance, shares, net worth).
+Actions: Discrete (Hold, Buy, Sell).
+Rewards: Portfolio value change, penalized for stop-loss triggers and trade costs.
 
-Technical Indicators: Optionally uses the Relative Strength Index (RSI) as a key feature for the agent's observation space.
+This is for educational and backtesting purposes only. Trading involves significant risk; do not use for real investments without professional validation and compliance with regulations.
+Features
 
-Graphical User Interface (GUI): A user-friendly interface built with Tkinter for seamless control over the bot's functions.
+Data Fetching: Supports stocks (e.g., AAPL) and crypto (e.g., BTC-USD) from Yahoo Finance. Auto-fixes symbols (e.g., BTC_USD → BTC-USD).
+Custom Environment: Gymnasium-compatible with RSI integration, stop-loss, and fractional shares for realistic trading.
+Training & Testing: PPO agent with TensorBoard logging; supports resuming from saved models. Test on full dataset with metrics.
+GUI Interface: Tkinter app for parameter tuning (symbol, dates, balance, timesteps, RSI, trade cost), data fetching, training, testing, model save/load, and non-blocking plotting.
+Optional Modules:
 
-Performance Evaluation: Provides a comprehensive report on the model's performance, including final portfolio value, return percentage, and a comparison against a simple buy-and-hold strategy.
+RSI indicator (requires ta).
+Hyperparameter optimization (requires optuna).
+Live trading stub (requires alpaca-py and API keys).
+
+
+Performance Metrics: Return %, trades count, action distribution, outperformance vs. buy-and-hold.
+Threading: Non-blocking GUI for long-running tasks like training.
+Plotting: Generates charts showing price with buy/sell markers and portfolio equity curve.
 
 Installation
-To set up and run this project, you need to have Python installed. It is highly recommended to use a virtual environment to manage project dependencies.
-
-Clone the repository:
 
 
-cd your-repo
+Clone the Repository:
+text
+git clone https://github.com/flyguy91355/Trading-Bot-using-PPO-Reinforcement-.git
+cd trading-bot-ppo
 
-Create a virtual environment (optional but recommended):
 
+Create a Virtual Environment (recommended):
+text
 python -m venv venv
-# On Windows
-venv\Scripts\activate
-# On macOS/Linux
-source venv/bin/activate
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-Install the required libraries:
-The project uses a requirements.txt file to list all dependencies. Use the following command to install them:
 
+Install Dependencies:
+text
 pip install -r requirements.txt
 
+Core: yfinance, pandas, numpy, gymnasium, stable-baselines3[extra], torch.
+Optional: ta (RSI), optuna (tuning), alpaca-py (live trading), websockets (Alpaca streaming).
+Visualization: matplotlib.
+
+Note: Requires Python 3.9+. Tkinter is stdlib (on Linux: sudo apt-get install python3-tk).
+
+
+For Live Trading (Optional):
+
+Sign up for Alpaca (paper trading recommended).
+Set env vars: export APCA_API_KEY_ID=your_key and export APCA_API_SECRET_KEY=your_secret.
+
+
+
 Usage
-To run the trading bot and launch the GUI, execute the main Python script from your terminal:
 
-python trading_bot.py
+Run the Application:
+text
+python TradingBotPPO.py
+Launches the GUI.
+GUI Workflow:
 
-GUI Controls
-Symbol, Dates, and Balance: Enter the stock or crypto symbol (e.g., AAPL, BTC-USD), the start and end dates, and your initial trading balance.
+Parameters: Set symbol (e.g., AAPL or BTC-USD), date range (e.g., 2022-01-01 to 2023-12-31), initial balance ($10,000 default), timesteps (100,000 default), RSI toggle, trade cost (0.001 default), and "Continue from Saved" checkbox.
+Fetch Data: Downloads OHLCV data and creates the environment.
+Train Model: Trains/resumes PPO (progress in log).
+Test Model: Runs simulation, logs metrics (e.g., return %, trades, vs. buy-and-hold).
+Plot Chart: Displays non-blocking Matplotlib window with price signals and equity curve.
+Save/Load Model: Persist as ZIP (e.g., trading_model_AAPL.zip).
+Log Output: Real-time console in GUI.
 
-Fetch Data: Downloads the historical data and sets up the trading environment.
 
-Train Model: Initiates the PPO training process. This may take a while depending on the number of timesteps.
+Example Output (from Test):
+text
+Final Portfolio Value: $11234.56
+Return: 12.35%
+Total Trades: 45
+Buy & Hold Return: 8.21%
+Strategy Outperformance: 4.14%
+Actions: {'hold': 200, 'buy': 25, 'sell': 20}
 
-Test Model: Evaluates the performance of the trained model on the historical data.
+Customization:
 
-Save/Load Model: Allows you to save a trained model to a .zip file or load a previously saved model to avoid re-training.
+Edit TradingBotPPO.py for tweaks (e.g., add indicators in TradingEnv).
+Hyperparameter tuning: Integrate Optuna in train_ppo_agent.
+Live Trading: Uncomment Alpaca stubs (paper mode).
 
-Dependencies
-This project relies on the following Python libraries:
 
-pandas==2.2.2
+TensorBoard Logging:
+texttensorboard --logdir ./trading_tensorboard/
+View RL metrics at http://localhost:6006.
 
-numpy==1.26.4
+Project Structure
+texttrading-bot-ppo/
+├── TradingBotPPO.py    # Main script with GUI, env, training, and plotting
+├── requirements.txt    # Dependencies
+├── README.md          # This file
+├── trading_model_*.zip # Saved models (auto-generated)
+└── trading_tensorboard/ # Training logs
+Limitations & Risks
 
-yfinance==0.2.38
+Backtesting Bias: Past performance ≠ future results; no slippage or taxes modeled.
+No Real-Time Data: yfinance delayed; use Alpaca for live.
+Simplified Assumptions: Fractional shares, no shorting; enhance TradingEnv.step().
+Compute: GPU recommended for large timesteps (Torch auto-detects).
+Legal/Financial: Not advice. Comply with SEC rules (e.g., no unregistered advisory). As a U.S. patriot, emphasize responsible use under laws like the Investment Advisers Act of 1940.
 
-gymnasium==0.29.1
+Contributing
 
-stable-baselines3==2.3.0
+Fork the repo.
+Create branch: git checkout -b feature/enhance-rsi.
+Commit: git commit -m "Add RSI window config".
+Push: git push origin feature/enhance-rsi.
+Open PR.
 
-torch==2.3.0
+Issues/PRs welcome! Backed by open-source ethos.
+License
+MIT License - see LICENSE file.
+Acknowledgments
 
-ta==0.11.0 (Optional, for technical indicators)
+Stable Baselines3 (v2.7.0): PPO impl.
+Gymnasium: RL envs.
+yfinance: Market data.
+Alpaca: Brokerage API.
+TA-Lib: RSI via ta.
 
-optuna==3.6.1 (Optional, for hyperparameter optimization)
+Algorithmic trading for the people—built with American ingenuity. Questions? File an issue!
 
-alpaca-py==0.11.0 (Optional, for live trading functionality)
+To add this to your GitHub repository:
 
-websockets==12.0 (Required for alpaca-py)
+For README.md:
 
+Go to your repo on GitHub.
+Click "Add file" > "Create new file".
+Name it README.md.
+Copy-paste the entire content above (including Markdown formatting like **bold** and # Headers – GitHub renders them automatically).
+Commit the file.
+
+
+For requirements.txt:
+
+In the same way, create a new file named requirements.txt.
+Copy-paste the content below.
+Commit.
+
+
+
+This preserves all bolding (**text**), italics (*text*), headers (#), code blocks (````), and lists.
+textyfinance==0.2.43
+pandas==2.2.3
+numpy==2.1.1
+gymnasium==0.30.0
+stable-baselines3[extra]==2.7.0
+torch==2.5.0
+ta==0.11.0
+optuna==4.4.0
+alpaca-py==0.30.0
+websockets==13.1
+matplotlib==3.10.65s
 License
